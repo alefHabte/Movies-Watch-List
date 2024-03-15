@@ -1,29 +1,15 @@
 import React from "react";
-import { useState } from "react";
 
-export default function MovieList({ tempMovieData }) {
-  const [isOpen1, setIsOpen1] = useState(true);
-  const [movies, setMovies] = useState(tempMovieData);
-
+export function Movie({ movies }) {
   return (
-    <div className="box">
-      <button
-        className="btn-toggle"
-        onClick={() => setIsOpen1((open) => !open)}
-      >
-        {isOpen1 ? "–" : "+"}
-      </button>
-      {isOpen1 && (
-        <ul className="list">
-          {movies?.map((movie) => (
-            <Movie movie={movie} key={movie.imdbID} />
-          ))}
-        </ul>
-      )}
-    </div>
+    <ul className="list">
+      {movies?.map((movie) => (
+        <SingleMov movie={movie} key={movie.imdbID} />
+      ))}
+    </ul>
   );
 }
-function Movie({ movie }) {
+function SingleMov({ movie }) {
   return (
     <li>
       <img src={movie.Poster} alt={`${movie.Title} poster`} />

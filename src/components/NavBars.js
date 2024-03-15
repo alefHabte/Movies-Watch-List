@@ -1,12 +1,12 @@
 import React from "react";
 import { useState } from "react";
 
-export default function NavBar() {
+export default function NavBar({ children }) {
   return (
     <nav className="nav-bar">
       <Logo />
       <Input />
-      <NoResults />
+      {children}
     </nav>
   );
 }
@@ -30,10 +30,10 @@ function Input() {
     />
   );
 }
-function NoResults() {
+export function NoResults({ movies }) {
   return (
     <p className="num-results">
-      Found <strong>x</strong> results
+      Found <strong>{movies}</strong> results
     </p>
   );
 }

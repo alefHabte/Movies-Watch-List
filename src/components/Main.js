@@ -1,11 +1,15 @@
-import MovieList from "./MovieList";
-import WatchedMovies from "./WatchedMovies";
-
-export default function Main({ tempWatchedData, tempMovieData }) {
+import { useState } from "react";
+export default function Main({ children }) {
+  return <main className="main">{children}</main>;
+}
+export function Box({ children }) {
+  const [isOpen, setIsOpen] = useState(true);
   return (
-    <main className="main">
-      <MovieList tempMovieData={tempMovieData} />
-      <WatchedMovies tempWatchedData={tempWatchedData} />
-    </main>
+    <div className="box">
+      <button className="btn-toggle" onClick={() => setIsOpen((open) => !open)}>
+        {isOpen ? "–" : "+"}
+      </button>
+      {isOpen && children}
+    </div>
   );
 }
