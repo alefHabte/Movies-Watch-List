@@ -1,10 +1,11 @@
 import NavBar from "./components/NavBars";
 import Main from "./components/Main";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MovesYouWatched } from "./components/WatchedMovies";
 import { NoResults } from "./components/NavBars";
 import { Movie } from "./components/MovieList";
 import { Box } from "./components/Main";
+import Input from "./components/NavBars";
 
 const tempMovieData = [
   {
@@ -54,19 +55,75 @@ const tempWatchedData = [
 ];
 
 export default function App() {
-  const [movies, setMovies] = useState(tempMovieData);
-  const [watched, setWatched] = useState(tempWatchedData);
+  const [movies, setMovies] = useState([]);
+  const [watched, setWatched] = useState([]);
+  const [query, setQuery] = useState("black");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [selectedMovie, setSelectedMovie] = useState(null);
+  const Key = "29696923";
+  const theMovie = "fBlack panther";
+
+  useEffect(() => {
+    async function fetchMovies() {
+      setError("");
+      try {
+        setIsLoading(true);
+        const res = await fetch(
+          `http://www.omdbapi.com/?apikey=${Key}&s=${query}`
+        );
+        if (!res.ok) throw Error("Something went wrong");
+        const data = await res.json();
+        if (data.Response === "False") throw new Error("Movie not found");
+        setMovies(data.Search);
+      } catch (err) {
+        console.error(err.message);
+        setError(err.message || "Not found");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    if (query.length < 3) {
+      setMovies([]);
+      setError("");
+      return;
+    }
+
+    fetchMovies();
+  }, [query]);
+
+  function Loading() {
+    return <p className="loader">Loading..</p>;
+  }
+  function Error({ message }) {
+    return (
+      <p className="error">
+        <span>❌</span> {message}{" "}
+      </p>
+    );
+  }
   return (
     <>
-      <NavBar>
-        <NoResults movies={movies.length} />
-      </NavBar>
+      <NavBar query={query} setQuery={setQuery} />
       <Main>
         <Box>
-          <Movie movies={movies} />
+          {error && <Error message={error} />}
+          {isLoading && <Loading />}
+          {!isLoading && !error && (
+            <Movie
+              movies={movies}
+              setSelectedMovie={setSelectedMovie}
+              selectedMovie={selectedMovie}
+            />
+          )}
         </Box>
         <Box>
-          <MovesYouWatched watched={watched} />
+          <MovesYouWatched
+            setWatched={setWatched}
+            watched={watched}
+            selectedMovie={selectedMovie}
+            setSelectedMovie={setSelectedMovie}
+          />
         </Box>
       </Main>
     </>

@@ -1,11 +1,11 @@
 import React from "react";
 import { useState } from "react";
 
-export default function NavBar({ children }) {
+export default function NavBar({ children, query, setQuery }) {
   return (
     <nav className="nav-bar">
       <Logo />
-      <Input />
+      <Input query={query} setQuery={setQuery} />
       {children}
     </nav>
   );
@@ -18,8 +18,7 @@ function Logo() {
     </div>
   );
 }
-function Input() {
-  const [query, setQuery] = useState("");
+function Input({ query, setQuery }) {
   return (
     <input
       className="search"

@@ -1,17 +1,29 @@
 import React from "react";
 
-export function Movie({ movies }) {
+export function Movie({ movies, setSelectedMovie, selectedMovie }) {
   return (
-    <ul className="list">
+    <ul className="list list-movies li ">
       {movies?.map((movie) => (
-        <SingleMov movie={movie} key={movie.imdbID} />
+        <SingleMov
+          movie={movie}
+          key={movie.imdbID}
+          setSelectedMovie={setSelectedMovie}
+          selectedMovie={selectedMovie}
+        />
       ))}
     </ul>
   );
 }
-function SingleMov({ movie }) {
+
+function SingleMov({ movie, setSelectedMovie, selectedMovie }) {
   return (
-    <li>
+    <li
+      onClick={() => {
+        selectedMovie === movie.imdbID
+          ? setSelectedMovie(null)
+          : setSelectedMovie(movie.imdbID);
+      }}
+    >
       <img src={movie.Poster} alt={`${movie.Title} poster`} />
       <h3>{movie.Title}</h3>
       <div>
