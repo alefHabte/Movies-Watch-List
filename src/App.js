@@ -57,7 +57,7 @@ const tempWatchedData = [
 export default function App() {
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
-  const [query, setQuery] = useState("black");
+  const [query, setQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [selectedMovie, setSelectedMovie] = useState(null);
@@ -65,32 +65,46 @@ export default function App() {
   const theMovie = "fBlack panther";
 
   useEffect(() => {
+    const controller = new AbortController();
+
     async function fetchMovies() {
       setError("");
       try {
         setIsLoading(true);
+        setError("");
         const res = await fetch(
-          `http://www.omdbapi.com/?apikey=${Key}&s=${query}`
+          `http://www.omdbapi.com/?apikey=${Key}&s=${query}`,
+          { signal: controller.signal }
         );
         if (!res.ok) throw Error("Something went wrong");
         const data = await res.json();
         if (data.Response === "False") throw new Error("Movie not found");
         setMovies(data.Search);
+        setError("");
       } catch (err) {
-        console.error(err.message);
-        setError(err.message || "Not found");
+        if (err.name !== "AbortError") {
+          setError(err.message || "Not found");
+          console.log(err.message);
+        }
       } finally {
         setIsLoading(false);
       }
     }
     if (query.length < 3) {
       setMovies([]);
-      setError("");
       return;
     }
 
+    handelCLosed();
     fetchMovies();
+    return function () {
+      controller.abort();
+    };
   }, [query]);
+
+  function handelCLosed() {
+    setSelectedMovie(null);
+  }
 
   function Loading() {
     return <p className="loader">Loading..</p>;
@@ -102,6 +116,7 @@ export default function App() {
       </p>
     );
   }
+
   return (
     <>
       <NavBar query={query} setQuery={setQuery} />

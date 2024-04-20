@@ -65,6 +65,19 @@ export function MovesYouWatched({
   } = MovieView;
 
   useEffect(() => {
+    document.addEventListener("keydown", callback);
+    function callback(e) {
+      if (e.key === "Escape") {
+        onClose();
+        cleanUp();
+      }
+    }
+    function cleanUp() {
+      document.removeEventListener("keydown", callback);
+    }
+  });
+
+  useEffect(() => {
     async function loadMovieDetails() {
       setIsLoading(true);
       const response = await fetch(
@@ -78,6 +91,17 @@ export function MovesYouWatched({
 
     loadMovieDetails();
   }, [selectedMovie]);
+  useEffect(
+    function () {
+      if (!title) return;
+      document.title = `${title}`;
+
+      return function () {
+        document.title = "usePopcorn";
+      };
+    },
+    [title]
+  );
 
   return (
     <>
