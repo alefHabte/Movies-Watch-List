@@ -1,6 +1,6 @@
 import NavBar from "./components/NavBars";
 import Main from "./components/Main";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MovesYouWatched } from "./components/WatchedMovies";
 import { NoResults } from "./components/NavBars";
 import { Movie } from "./components/MovieList";
@@ -56,7 +56,10 @@ const tempWatchedData = [
 
 export default function App() {
   const [movies, setMovies] = useState([]);
-  const [watched, setWatched] = useState([]);
+  const [watched, setWatched] = useState(function () {
+    const saved = localStorage.getItem("watch");
+    return JSON.parse(saved);
+  });
   const [query, setQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -101,6 +104,10 @@ export default function App() {
       controller.abort();
     };
   }, [query]);
+
+  useEffect(() => {
+    localStorage.setItem("watch", JSON.stringify(watched));
+  }, [watched]);
 
   function handelCLosed() {
     setSelectedMovie(null);
