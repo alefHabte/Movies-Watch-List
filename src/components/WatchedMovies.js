@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useState } from "react";
 import StarRating from "./StarRating";
 
@@ -19,6 +19,8 @@ export function MovesYouWatched({
   const [MovieView, setMovieView] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [userRating, setUserRating] = useState("");
+
+  const countRating = useRef(0);
 
   const isWatched = watched
     .map((movie) => movie.imdbID)
@@ -42,6 +44,7 @@ export function MovesYouWatched({
       imdbRating,
       userRating,
       imdbID,
+      ratingChanged: countRating.current,
     };
 
     setWatched((watched) => [...watched, movieDetail]);
@@ -102,6 +105,15 @@ export function MovesYouWatched({
     },
     [title]
   );
+  useEffect(() => {
+    if (userRating) {
+      countRating.current++;
+    }
+
+    function cleanUp() {
+      countRating.current = 0;
+    }
+  }, [userRating]);
 
   return (
     <>
