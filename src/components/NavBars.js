@@ -1,18 +1,27 @@
 import React, { useEffect } from "react";
 import { useRef } from "react";
+import { useKeys } from "../useKeys";
 
 export default function NavBar({ children, query, setQuery }) {
   const FocusOn = useRef(null);
-  useEffect(() => {
-    document.addEventListener("keydown", callback);
-    function callback(e) {
-      if (document.activeElement === FocusOn.current) return;
-      if (e.key === "Enter") {
-        FocusOn.current.focus();
-        setQuery("");
-      }
-    }
-  }, []);
+
+  function focus() {
+    if (document.activeElement === FocusOn.current) return;
+    FocusOn.current.focus();
+    setQuery("");
+  }
+
+  useKeys("Enter", focus);
+
+  // useEffect(() => {
+  //   function callback(e) {
+  //     if (e.key === "Enter") {
+  //       FocusOn.current.focus();
+  //       setQuery("");
+  //     }
+  //   }
+  // }, []);
+
   return (
     <nav className="nav-bar">
       <Logo />

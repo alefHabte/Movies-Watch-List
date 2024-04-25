@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { useState } from "react";
 import StarRating from "./StarRating";
+import { useKeys } from "../useKeys";
 
 export function MovesYouWatched({
   watched,
@@ -67,18 +68,7 @@ export function MovesYouWatched({
     imdbID: imdbID,
   } = MovieView;
 
-  useEffect(() => {
-    document.addEventListener("keydown", callback);
-    function callback(e) {
-      if (e.key === "Escape") {
-        onClose();
-        cleanUp();
-      }
-    }
-    function cleanUp() {
-      document.removeEventListener("keydown", callback);
-    }
-  });
+  useKeys("Escape", onClose);
 
   useEffect(() => {
     async function loadMovieDetails() {

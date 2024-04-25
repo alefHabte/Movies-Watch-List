@@ -6,6 +6,8 @@ import { NoResults } from "./components/NavBars";
 import { Movie } from "./components/MovieList";
 import { Box } from "./components/Main";
 import Input from "./components/NavBars";
+import { useMovies } from "./useMovies";
+import { useLocalStoreState } from "./useLocalStoreState";
 
 const tempMovieData = [
   {
@@ -55,59 +57,14 @@ const tempWatchedData = [
 ];
 
 export default function App() {
-  const [movies, setMovies] = useState([]);
-  const [watched, setWatched] = useState(function () {
-    const saved = localStorage.getItem("watch");
-    return JSON.parse(saved);
-  });
   const [query, setQuery] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
   const [selectedMovie, setSelectedMovie] = useState(null);
+  const { error, isLoading, movies } = useMovies(query);
+
   const Key = "29696923";
   const theMovie = "fBlack panther";
 
-  useEffect(() => {
-    const controller = new AbortController();
-
-    async function fetchMovies() {
-      setError("");
-      try {
-        setIsLoading(true);
-        setError("");
-        const res = await fetch(
-          `http://www.omdbapi.com/?apikey=${Key}&s=${query}`,
-          { signal: controller.signal }
-        );
-        if (!res.ok) throw Error("Something went wrong");
-        const data = await res.json();
-        if (data.Response === "False") throw new Error("Movie not found");
-        setMovies(data.Search);
-        setError("");
-      } catch (err) {
-        if (err.name !== "AbortError") {
-          setError(err.message || "Not found");
-          console.log(err.message);
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    if (query.length < 3) {
-      setMovies([]);
-      return;
-    }
-
-    handelCLosed();
-    fetchMovies();
-    return function () {
-      controller.abort();
-    };
-  }, [query]);
-
-  useEffect(() => {
-    localStorage.setItem("watch", JSON.stringify(watched));
-  }, [watched]);
+  const [watched, setWatched] = useLocalStoreState([], "watch");
 
   function handelCLosed() {
     setSelectedMovie(null);
